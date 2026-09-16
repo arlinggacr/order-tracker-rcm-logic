@@ -1,4 +1,8 @@
 import type { AuthRepository } from '../repository/auth.repository'
+import {
+  AuthenticationError,
+  InvariantError,
+} from '../../../../libs/common/responses'
 import { SignJWT } from 'jose'
 
 const jwtSecret = process.env.JWT_SECRET_KEY
@@ -26,7 +30,7 @@ export class AuthService {
     const existingUser = await this.authRepository.findByEmail(normalizedEmail)
 
     if (existingUser) {
-      throw new Error('Email is already registered')
+      throw new InvariantError('Email is already registered')
     }
 
     const passwordHash = await Bun.password.hash(password)
@@ -46,7 +50,7 @@ export class AuthService {
     )
 
     if (!user || !(await Bun.password.verify(password, user.passwordHash))) {
-      throw new Error('Invalid email or password')
+      throw new AuthenticationError('Invalid email or password')
     }
 
     const responseUser = { id: user.id, email: user.email }

@@ -1,4 +1,5 @@
 import { Elysia, t } from 'elysia'
+import { ResponseHandler } from '../../../../libs/common/responses'
 import type { AuthService } from '../service/auth.service'
 
 export const createAuthController = (authService: AuthService) =>
@@ -7,13 +8,15 @@ export const createAuthController = (authService: AuthService) =>
       '/auth/register',
       async ({ body, set }) => {
         try {
-          return await authService.register(body.email, body.password)
+          return ResponseHandler.success(
+            set,
+            await authService.register(body.email, body.password),
+            'Registration successful',
+            undefined,
+            201,
+          )
         } catch (error) {
-          set.status = error instanceof Error ? 409 : 500
-          return {
-            message:
-              error instanceof Error ? error.message : 'Unable to register',
-          }
+          return ResponseHandler.error(set, error)
         }
       },
       {
@@ -27,12 +30,13 @@ export const createAuthController = (authService: AuthService) =>
       '/auth/login',
       async ({ body, set }) => {
         try {
-          return await authService.login(body.email, body.password)
+          return ResponseHandler.success(
+            set,
+            await authService.login(body.email, body.password),
+            'Login successful',
+          )
         } catch (error) {
-          set.status = 401
-          return {
-            message: error instanceof Error ? error.message : 'Unable to login',
-          }
+          return ResponseHandler.error(set, error)
         }
       },
       {

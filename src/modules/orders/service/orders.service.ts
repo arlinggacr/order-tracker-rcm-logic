@@ -1,4 +1,5 @@
 import type { OrdersRepository } from '../repository/orders.repository'
+import { NotFoundError } from '../../../../libs/common/responses'
 
 export class OrdersService {
   constructor(private readonly ordersRepository: OrdersRepository) {}
@@ -7,7 +8,13 @@ export class OrdersService {
     return this.ordersRepository.findAll()
   }
 
-  getById(id: number) {
-    return this.ordersRepository.findById(id)
+  async getById(id: number) {
+    const order = await this.ordersRepository.findById(id)
+
+    if (!order) {
+      throw new NotFoundError('Order not found')
+    }
+
+    return order
   }
 }

@@ -50,6 +50,7 @@ export const orders = pgTable('orders', {
   status: orderStatus('status').default('PENDING').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at'),
 })
 
 export const orderAttachments = pgTable('order_attachments', {
@@ -62,6 +63,17 @@ export const orderAttachments = pgTable('order_attachments', {
   uploadedAt: timestamp('uploaded_at').defaultNow().notNull(),
 })
 
+export const paymentHistory = pgTable('payment_history', {
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  orderId: integer('order_id')
+    .references(() => orders.id, { onDelete: 'cascade' })
+    .notNull(),
+  amount: numeric('amount', { precision: 12, scale: 2 }).notNull(),
+  paymentDate: date('payment_date').defaultNow().notNull(),
+  note: text('note'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
 export type Customer = typeof customers.$inferSelect
@@ -70,3 +82,5 @@ export type Order = typeof orders.$inferSelect
 export type NewOrder = typeof orders.$inferInsert
 export type OrderAttachment = typeof orderAttachments.$inferSelect
 export type NewOrderAttachment = typeof orderAttachments.$inferInsert
+export type PaymentHistory = typeof paymentHistory.$inferSelect
+export type NewPaymentHistory = typeof paymentHistory.$inferInsert

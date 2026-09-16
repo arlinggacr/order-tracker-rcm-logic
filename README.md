@@ -52,3 +52,10 @@ src/modules/health/
 ```
 
 The application currently includes `auth` and `orders` modules with the same structure. Auth stores a Bun-generated password hash in `users.password_hash`; plaintext passwords are never persisted.
+
+Auth endpoints return a JWT access token:
+
+- `POST /auth/register`
+- `POST /auth/login`
+
+Tokens expire after one day. Set `JWT_SECRET_KEY` in `.env` to a long, random secret.

@@ -1,0 +1,7 @@
+.git
+.env
+node_modules
+dist
+.DS_Store
+Dockerfile
+docker-compose.yml
